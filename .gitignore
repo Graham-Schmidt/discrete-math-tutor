@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Misc
+notes/
+
+# MacOS
+*DS_Store*
+
+# Local data storage
+source-data/*
