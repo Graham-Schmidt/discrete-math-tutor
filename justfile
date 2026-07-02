@@ -1,5 +1,5 @@
 collect-course-materials:
-    python downloader.py
+    python course-downloader.py
 
 delete-course-materials:
     rm -rf source-data
