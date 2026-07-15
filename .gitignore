@@ -224,4 +224,7 @@ notes/
 *DS_Store*
 
 # Local data storage
-source-data/*
+data/
+data/*
+marker_output/
+marker_output/*
