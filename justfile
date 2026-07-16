@@ -1,7 +1,7 @@
 set dotenv-load := true
 
 collect-course-materials:
-    python course-downloader.py
+    python course_downloader.py
 
 delete-course-materials:
     rm -rf $COURSE_MATERIALS_PATH
