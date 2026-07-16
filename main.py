@@ -1,4 +1,5 @@
 import chromadb
+from chromadb.api import ClientAPI
 from openai import OpenAI
 
 from chunk import chunk_markdown_file
@@ -18,14 +19,11 @@ from config import (
     TEST_COLLECTION_NAME,
 )
 
+from test_queries import TEST_QUERIES
+
 TEST_QUERY = "what is the axiomatic method?"
 
-
-def main():
-    chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
-    openai_client = OpenAI()
-    # PART 1: DATA INJESTION
-    # convert markdown chapter into chunks
+def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
     chunk_markdown_file(TEST_FILE_PATH)
     # get embeddings for chunks, write to disk
     embed_chapter_file(
@@ -49,8 +47,8 @@ def main():
         client=chroma_client, collection=collection, chunks=embedded_chunks
     )
 
-    # PART 2: QUERY COMPARISON
-    user_query = TEST_QUERY
+def fetch_answer(user_query: str, chroma_client: ClientAPI, openai_client: OpenAI, collection):
+    # user_query = TEST_QUERY
 
     # lookup k nearest neighbors from collection
     closest_matches = retrieve(
@@ -59,8 +57,27 @@ def main():
         n_results=5,
         openai_client=openai_client,
     )
-    answer_for_user = answer_user_question(openai_client=openai_client, user_query=user_query, retrieved_chunks=closest_matches)
-    print(answer_for_user.output_text)
+    answer_for_user = answer_user_question(
+        openai_client=openai_client,
+        user_query=user_query,
+        retrieved_chunks=closest_matches,
+    )
+    return answer_for_user.output_text
+
+def main():
+    chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
+    openai_client = OpenAI()
+    collection = get_collection(
+        client=chroma_client, collection_name=TEST_COLLECTION_NAME
+    )
+    
+    # prepare_data(chroma_client=chroma_client, openai_client=openai_client, collection=collection)
+
+    # answer = fetch_answer(chroma_client=chroma_client, openai_client=openai_client, collection=collection)
+    for query in TEST_QUERIES:
+        print(f"# Answer for query '{query}'\n")
+        print(f"{fetch_answer(user_query=query, chroma_client=chroma_client, openai_client=openai_client, collection=collection)}")
+        print("END OF RESPONSE\n")
 
 
 def just_embed_user():

@@ -15,7 +15,9 @@ def get_completion(client: OpenAI, prompt: str, model: str, system_prompt: str =
 
 
 # this function belongs in a different module
-def answer_user_question(openai_client: OpenAI, user_query: str, retrieved_chunks: list[RetrievedChunk]):
+def answer_user_question(
+    openai_client: OpenAI, user_query: str, retrieved_chunks: list[RetrievedChunk]
+):
     formatted_chunks = _format_context(chunks=retrieved_chunks)
     full_input = _build_user_input(query=user_query, context=formatted_chunks)
     result = get_completion(
