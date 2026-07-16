@@ -16,9 +16,7 @@ TEST_COLLECTION_NAME = os.environ["TEST_COLLECTION_NAME"]
 TEST_FILE_PATH = Path(os.environ["TEST_FILE_PATH"])
 OUTPUT_PATH = Path(os.environ["OUTPUT_PATH"])
 
-# if not COURSE_DATA_DIR.exists():
-#        raise FileNotFoundError(f"COURSE_DATA_DIR={COURSE_DATA_DIR} does not exist")
-# if not CHUNK_JSONL_DIR.exists():
-#        raise FileNotFoundError(f"CHUNK_JSONL_DIR={CHUNK_JSONL_DIR} does not exist")
-# if not EMBEDDED_CHUNK_DIR.exists():
-#        raise FileNotFoundError(f"EMBEDDED_CHUNK_DIR={EMBEDDED_CHUNK_DIR} does not exist")
+GPT_4_1_MINI = os.environ["GPT_4_1_MINI"]
+
+if not COURSE_DATA_DIR.exists():
+    raise FileNotFoundError(f"COURSE_DATA_DIR={COURSE_DATA_DIR} does not exist")

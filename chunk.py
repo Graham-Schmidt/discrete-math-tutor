@@ -15,12 +15,6 @@ from models import ReadingChapterChunk
 from config import CHUNK_JSONL_DIR
 from utils import generate_chunk_id, write_jsonl
 
-TEST_FILE_PATH = Path(
-    "/Users/grahamschmidt/development/discrete-math-tutor/marker_output/38ca8d7baeedd6aa476010a0cbd041d0_MIT6_042JF10_chap02/38ca8d7baeedd6aa476010a0cbd041d0_MIT6_042JF10_chap02.md"
-)
-OUTPUT_PATH = Path(
-    "/Users/grahamschmidt/development/discrete-math-tutor/jsonl/test.jsonl"
-)
 ENC = tiktoken.encoding_for_model("text-embedding-3-small")
 CHUNK_SIZE_LIMIT = 512
 

@@ -228,3 +228,6 @@ data/
 data/*
 marker_output/
 marker_output/*
+
+# Claude
+CLAUDE.md
