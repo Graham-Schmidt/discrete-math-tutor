@@ -10,7 +10,7 @@ from retrieve import retrieve
 from utils import read_jsonl
 from models import EmbeddedChunk
 from config import (
-    TEST_FILE_PATH,
+    CHAPTER_2_MD_FILE_PATH,
     CHROMA_PERSIST_DIR,
     CHUNK_JSONL_DIR,
     RAW_CHUNKS_FILE,
@@ -23,8 +23,9 @@ from test_queries import TEST_QUERIES
 
 TEST_QUERY = "what is the axiomatic method?"
 
+
 def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
-    chunk_markdown_file(TEST_FILE_PATH)
+    chunk_markdown_file(CHAPTER_2_MD_FILE_PATH)
     # get embeddings for chunks, write to disk
     embed_chapter_file(
         input_dir=CHUNK_JSONL_DIR,
@@ -47,7 +48,10 @@ def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
         client=chroma_client, collection=collection, chunks=embedded_chunks
     )
 
-def fetch_answer(user_query: str, chroma_client: ClientAPI, openai_client: OpenAI, collection):
+
+def fetch_answer(
+    user_query: str, chroma_client: ClientAPI, openai_client: OpenAI, collection
+):
     # user_query = TEST_QUERY
 
     # lookup k nearest neighbors from collection
@@ -64,19 +68,22 @@ def fetch_answer(user_query: str, chroma_client: ClientAPI, openai_client: OpenA
     )
     return answer_for_user.output_text
 
+
 def main():
     chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
     openai_client = OpenAI()
     collection = get_collection(
         client=chroma_client, collection_name=TEST_COLLECTION_NAME
     )
-    
-    # prepare_data(chroma_client=chroma_client, openai_client=openai_client, collection=collection)
+
+    prepare_data(chroma_client=chroma_client, openai_client=openai_client)
 
     # answer = fetch_answer(chroma_client=chroma_client, openai_client=openai_client, collection=collection)
     for query in TEST_QUERIES:
         print(f"# Answer for query '{query}'\n")
-        print(f"{fetch_answer(user_query=query, chroma_client=chroma_client, openai_client=openai_client, collection=collection)}")
+        print(
+            f"{fetch_answer(user_query=query, chroma_client=chroma_client, openai_client=openai_client, collection=collection)}"
+        )
         print("END OF RESPONSE\n")
 
 
