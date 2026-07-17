@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 from models import ReadingChapterChunk
 from config import CHUNK_JSONL_DIR
-from utils import generate_chunk_id, write_jsonl
+from utils import generate_chunk_id, write_jsonl, read_md_by_line
 
 ENC = tiktoken.encoding_for_model("text-embedding-3-small")
 CHUNK_SIZE_LIMIT = 512
@@ -31,7 +31,7 @@ class NextChunkResult:
 # Public
 # ------------------------
 def chunk_markdown_file(file_path: Path):
-    lines = _read_file(file_path)
+    lines = read_md_by_line(file_path)
     all_chunks = _get_chunks(lines)
     _write_chunks_to_jsonl(all_chunks, CHUNK_JSONL_DIR)
 
@@ -94,7 +94,7 @@ def _get_chunks(lines: list[str]) -> list[ReadingChapterChunk]:
     return all_chunks
 
 
-def _read_file(file_name: Path) -> list[str]:
-    with open(file_name) as file:
-        res = file.readlines()
-    return res
+# def _read_file(file_name: Path) -> list[str]:
+#     with open(file_name) as file:
+#         res = file.readlines()
+#     return res

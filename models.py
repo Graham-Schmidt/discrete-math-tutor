@@ -24,3 +24,10 @@ class EmbeddedChunk(ReadingChapterChunk):
 class RetrievedChunk(ReadingChapterChunk):
     id: str
     distance: float = 0
+
+
+@dataclass
+class Section():
+    text: str
+    # TODO probably create enum of options
+    content_type: str

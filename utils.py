@@ -25,6 +25,10 @@ def read_jsonl(dir: Path, file_name: str, cls: type[T]) -> list[T]:
     with open(dir / file_name) as file:
         return [cls(**json.loads(line)) for line in file]
 
+def read_md_by_line(file_name: Path) -> list[str]:
+    with open(file_name) as file:
+        res = file.readlines()
+    return res
 
 def _check_for_dir(dir: Path):
     if not dir.is_dir():
