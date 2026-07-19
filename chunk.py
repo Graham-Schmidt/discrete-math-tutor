@@ -44,6 +44,7 @@ def chunk_sections(sections: list[Section]) -> list[ReadingChapterChunk]:
             content_type=section.content_type,
             chapter=section.chapter,
             section_title=section.section_title,
+            section_number=section.section_number,
         )
         chunks.append(chunk)
         chunk_counter += 1
