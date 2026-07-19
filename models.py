@@ -1,7 +1,5 @@
 from dataclasses import dataclass, field
 
-from utils import generate_chunk_id
-
 
 @dataclass
 class Chunk:
@@ -12,7 +10,11 @@ class Chunk:
 
 @dataclass
 class ReadingChapterChunk(Chunk):
+    parent_id: str = ""
+    content_type: str = ""
     chapter: str = ""
+    section_number: str = ""
+    section_title: str = ""
 
 
 @dataclass
@@ -27,7 +29,10 @@ class RetrievedChunk(ReadingChapterChunk):
 
 
 @dataclass
-class Section():
+class Section:
+    id: str
     text: str
-    # TODO probably create enum of options
     content_type: str
+    chapter: str = ""
+    section_number: str = ""
+    section_title: str = ""

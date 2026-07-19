@@ -28,10 +28,7 @@ def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
     chunk_markdown_file(CHAPTER_2_MD_FILE_PATH)
     # get embeddings for chunks, write to disk
     embed_chapter_file(
-        input_dir=CHUNK_JSONL_DIR,
-        input_file_name=RAW_CHUNKS_FILE,
-        output_dir=EMBEDDED_CHUNK_DIR,
-        output_file_name=EMBEDDED_CHUNKS_FILE,
+        input_path=RAW_CHUNKS_FILE,
         client=openai_client,
     )
 
@@ -76,15 +73,22 @@ def main():
         client=chroma_client, collection_name=TEST_COLLECTION_NAME
     )
 
-    prepare_data(chroma_client=chroma_client, openai_client=openai_client)
+    # prepare_data(chroma_client=chroma_client, openai_client=openai_client)
 
-    # answer = fetch_answer(chroma_client=chroma_client, openai_client=openai_client, collection=collection)
+    """Test single query"""
+    # answer = fetch_answer(user_query=TEST_QUERIES[0], chroma_client=chroma_client, openai_client=openai_client, collection=collection)
+    # print(answer)
+
+    """Test all queries"""
     for query in TEST_QUERIES:
         print(f"# Answer for query '{query}'\n")
         print(
             f"{fetch_answer(user_query=query, chroma_client=chroma_client, openai_client=openai_client, collection=collection)}"
         )
         print("END OF RESPONSE\n")
+
+    # TODO PICKUP finished new flow of embedding sections, need to verify they enter chroma as expected
+    # TODO finish rewire of answer flow
 
 
 def just_embed_user():
