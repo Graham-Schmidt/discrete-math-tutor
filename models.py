@@ -1,7 +1,5 @@
 from dataclasses import dataclass, field
 
-from utils import generate_chunk_id
-
 
 @dataclass
 class Chunk:
@@ -12,7 +10,11 @@ class Chunk:
 
 @dataclass
 class ReadingChapterChunk(Chunk):
+    parent_id: str = ""
+    content_type: str = ""
     chapter: str = ""
+    section_number: str = ""
+    section_title: str = ""
 
 
 @dataclass
@@ -24,3 +26,13 @@ class EmbeddedChunk(ReadingChapterChunk):
 class RetrievedChunk(ReadingChapterChunk):
     id: str
     distance: float = 0
+
+
+@dataclass
+class Section:
+    id: str
+    text: str
+    content_type: str
+    chapter: str = ""
+    section_number: str = ""
+    section_title: str = ""

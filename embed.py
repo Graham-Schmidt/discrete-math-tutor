@@ -31,9 +31,11 @@ def embed_chunks(
     chunking. Fine at one-chapter scale; both become necessary once
     ingesting the full book.
     """
-    vectors_by_position = _call_embedding_api(
-        texts=[chunk.text for chunk in chunks], client=client
-    )
+    text_to_embed = [
+        f"This chunk is from chapter {chunk.chapter}, Section {chunk.section_title}. {chunk.text}"
+        for chunk in chunks
+    ]
+    vectors_by_position = _call_embedding_api(texts=text_to_embed, client=client)
 
     return [
         EmbeddedChunk(
@@ -56,18 +58,19 @@ def embed_query(text: str, client: OpenAI) -> list[float]:
 
 
 def embed_chapter_file(
-    input_dir: Path,
-    input_file_name: str,
-    output_dir: Path,
-    output_file_name: str,
+    input_path: Path,
     client: OpenAI,
 ) -> None:
     """Read a chapter's chunk JSONL, embed it, write embedded JSONL."""
+    input_dir, input_file_name = input_path.parent, input_path.name
     chunks = read_jsonl(
         dir=input_dir, file_name=input_file_name, cls=ReadingChapterChunk
     )
     embedded_chunks = embed_chunks(chunks, client)
-    write_jsonl(records=embedded_chunks, dir=output_dir, file_name=output_file_name)
+    output_file_name = input_path.stem
+    write_jsonl(
+        records=embedded_chunks, dir=EMBEDDED_CHUNK_DIR, file_name=output_file_name
+    )
 
 
 def _call_embedding_api(
@@ -78,15 +81,15 @@ def _call_embedding_api(
     return vectors_by_position
 
 
-if __name__ == "__main__":
-    client = OpenAI()
-    embed_chapter_file(
-        # This is a bad pattern, expects complete path + filename
-        input_dir=CHUNK_JSONL_DIR,
-        # TODO temp hardcode
-        input_file_name=RAW_CHUNKS_FILE,
-        output_dir=EMBEDDED_CHUNK_DIR,
-        # TODO temp hardcode
-        output_file_name=EMBEDDED_CHUNKS_FILE,
-        client=client,
-    )
+# if __name__ == "__main__":
+#     client = OpenAI()
+#     embed_chapter_file(
+#         # This is a bad pattern, expects complete path + filename
+#         input_dir=CHUNK_JSONL_DIR,
+#         # TODO temp hardcode
+#         input_file_name=RAW_CHUNKS_FILE,
+#         output_dir=EMBEDDED_CHUNK_DIR,
+#         # TODO temp hardcode
+#         output_file_name=EMBEDDED_CHUNKS_FILE,
+#         client=client,
+#     )

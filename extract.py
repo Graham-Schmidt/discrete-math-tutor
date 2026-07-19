@@ -9,7 +9,6 @@ from marker.output import save_output
 from config import MARKER_OUTPUT_DIR, CHAPTER_2_PDF_FILE_PATH
 
 
-
 def build_pdf_converter() -> PdfConverter:
     """Convert provided PDF file to Markdown via Marker"""
     return PdfConverter(artifact_dict=create_model_dict())
@@ -29,6 +28,7 @@ def main():
     chapter_2_path = Path(CHAPTER_2_PDF_FILE_PATH)
     converter = build_pdf_converter()
     extract_pdf_file(converter=converter, file_path=chapter_2_path)
+
 
 if __name__ == "__main__":
     main()
