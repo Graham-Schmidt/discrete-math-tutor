@@ -44,6 +44,10 @@ def embed_chunks(
             text=chunk.text,
             chapter=chunk.chapter,
             embedding=vectors_by_position[i],
+            content_type=chunk.content_type,
+            section_number=chunk.section_number,
+            section_title=chunk.section_title,
+            parent_id=chunk.parent_id,
         )
         for i, chunk in enumerate(chunks)
     ]

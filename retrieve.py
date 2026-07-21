@@ -3,12 +3,16 @@
 # hit chromadb for most similar embedding
 # return
 
+from typing import TypeVar
+
 from openai import OpenAI
 from chromadb.api import ClientAPI
 from chromadb import Collection, QueryResult, Metadata
 
 from embed import embed_query
 from models import RetrievedChunk
+
+T = TypeVar("T")
 
 # TEMP IMPORTS FOR EASY TESTING
 import chromadb
@@ -40,38 +44,37 @@ def query_collection(
     return formatted_res
 
 
-def _validate_token_size(metadata: Metadata):
-    raw_token_size = metadata["token_size"]
+def _validate_metadata_field(metadata: Metadata, key: str, expected_type: type[T]) -> T:
+    raw_value = metadata[key]
     assert isinstance(
-        raw_token_size, int
-    ), f"expected int token_size, got {type(raw_token_size)}"
-    return raw_token_size
-
-
-def _validate_chapter_type(metadata: Metadata):
-    raw_chapter = metadata["chapter"]
-    assert isinstance(
-        raw_chapter, str
-    ), f"expected str chapter, got {type(raw_chapter)}"
-    return raw_chapter
+        raw_value, expected_type
+    ), f"expected {expected_type.__name__} {key}, got {type(raw_value)}"
+    return raw_value
 
 
 def _chroma_result_to_chunks(query_result: QueryResult) -> list[RetrievedChunk]:
     ids = query_result["ids"][0]
-    documents = query_result["documents"][0]
-    metadatas = query_result["metadatas"][0]
-    distances = query_result["distances"][0]
+    documents = query_result["documents"]
+    metadatas = query_result["metadatas"]
+    distances = query_result["distances"]
+    assert documents is not None, "expected documents in query result"
+    assert metadatas is not None, "expected metadatas in query result"
+    assert distances is not None, "expected distances in query result"
 
     return [
         RetrievedChunk(
             id=id_,
             text=document,
-            chapter=_validate_chapter_type(metadata),
-            token_size=_validate_token_size(metadata),
+            token_size=_validate_metadata_field(metadata, "token_size", int),
+            chapter=_validate_metadata_field(metadata, "chapter", str),
+            content_type=_validate_metadata_field(metadata, "content_type", str),
+            section_number=_validate_metadata_field(metadata, "section_number", str),
+            section_title=_validate_metadata_field(metadata, "section_title", str),
+            parent_id=_validate_metadata_field(metadata, "parent_id", str),
             distance=distance,
         )
         for id_, document, metadata, distance in zip(
-            ids, documents, metadatas, distances
+            ids, documents[0], metadatas[0], distances[0]
         )
     ]
 

@@ -25,7 +25,14 @@ def _chunks_to_chroma_format(chunks: list[EmbeddedChunk]) -> dict:
         output["embeddings"].append(chunk.embedding)
         output["documents"].append(chunk.text)
         output["metadatas"].append(
-            {"chapter": chunk.chapter, "token_size": chunk.token_size}
+            {
+                "chapter": chunk.chapter,
+                "token_size": chunk.token_size,
+                "content_type": chunk.content_type,
+                "section_number": chunk.section_number,
+                "section_title": chunk.section_title,
+                "parent_id": chunk.parent_id,
+            }
         )
     return output
 

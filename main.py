@@ -36,7 +36,7 @@ def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
     embedded_chunks = read_jsonl(
         dir=EMBEDDED_CHUNK_DIR, file_name=EMBEDDED_CHUNKS_FILE, cls=EmbeddedChunk
     )
-    # determine chroma collection to inteact with
+    # determine chroma collection to interact with
     collection = get_collection(
         client=chroma_client, collection_name=TEST_COLLECTION_NAME
     )
@@ -73,6 +73,7 @@ def main():
         client=chroma_client, collection_name=TEST_COLLECTION_NAME
     )
 
+    """Chunks, embeds, and stores data | EXPENSIVE"""
     # prepare_data(chroma_client=chroma_client, openai_client=openai_client)
 
     """Test single query"""
@@ -87,18 +88,6 @@ def main():
         )
         print("END OF RESPONSE\n")
 
-    # TODO PICKUP finished new flow of embedding sections, need to verify they enter chroma as expected
-    # TODO finish rewire of answer flow
-
-
-def just_embed_user():
-    # chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
-    openai_client = OpenAI()
-    user_query = TEST_QUERY
-    user_query_embedding = embed_query(text=user_query, client=openai_client)
-    print(user_query_embedding)
-
 
 if __name__ == "__main__":
     main()
-    # just_embed_user()
