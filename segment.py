@@ -29,7 +29,7 @@ def segment_markdown_file(file_path: Path) -> list[Section]:
     chapter = _extract_chapter_id(file_path)
     lines = read_md_by_line(file_path)
     paragraphs = _split_into_paragraphs(lines)
-    return _build_sections(paragraphs, chapter)
+    return _build_sections(paragraphs, chapter, file_path)
 
 
 def _extract_chapter_id(file_path: Path) -> str:
@@ -78,7 +78,9 @@ def _parse_numbered_header(stripped_paragraph: str) -> tuple[str, str] | None:
     return match.group("number"), match.group("title").strip()
 
 
-def _build_sections(paragraphs: list[str], chapter: str) -> list[Section]:
+def _build_sections(
+    paragraphs: list[str], chapter: str, file_path: Path
+) -> list[Section]:
     """Parser phase: walks paragraphs in order, carrying section_number/
     section_title as running state. Headers are consumed to update that state
     (or, for labeled references like "### Theorem 2.3.2.", classified and
@@ -130,6 +132,7 @@ def _build_sections(paragraphs: list[str], chapter: str) -> list[Section]:
                 chapter=chapter,
                 section_number=section_number,
                 section_title=section_title,
+                file_path=file_path,
             )
         )
         counter += 1

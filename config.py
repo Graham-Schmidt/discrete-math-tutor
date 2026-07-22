@@ -19,6 +19,7 @@ CHAPTER_2_MD_FILE_PATH = Path(os.environ["CHAPTER_2_MD_FILE_PATH"])
 OUTPUT_PATH = Path(os.environ["OUTPUT_PATH"])
 
 GPT_4_1_MINI = os.environ["GPT_4_1_MINI"]
+EMBEDDING_MODEL_SMALL = os.environ["EMBEDDING_MODEL_SMALL"]
 
 if not COURSE_DATA_DIR.exists():
     raise FileNotFoundError(f"COURSE_DATA_DIR={COURSE_DATA_DIR} does not exist")

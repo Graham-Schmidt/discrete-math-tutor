@@ -25,7 +25,7 @@ TEST_QUERY = "what is the axiomatic method?"
 
 
 def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
-    chunk_markdown_file(CHAPTER_2_MD_FILE_PATH)
+    chunk_markdown_file(CHAPTER_2_MD_FILE_PATH, client=openai_client)
     # get embeddings for chunks, write to disk
     embed_chapter_file(
         input_path=RAW_CHUNKS_FILE,

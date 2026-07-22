@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass
@@ -15,6 +16,8 @@ class ReadingChapterChunk(Chunk):
     chapter: str = ""
     section_number: str = ""
     section_title: str = ""
+    context_for_embedding: str = ""
+    file_path: Path | None = None
 
 
 @dataclass
@@ -36,3 +39,4 @@ class Section:
     chapter: str = ""
     section_number: str = ""
     section_title: str = ""
+    file_path: Path | None = None
