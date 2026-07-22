@@ -22,6 +22,7 @@ load_dotenv()
 EMBEDDING_MODEL = "text-embedding-3-small"
 
 
+# TODO account for new field in Chunk, context_for_embed
 def embed_chunks(
     chunks: list[ReadingChapterChunk], client: OpenAI
 ) -> list[EmbeddedChunk]:
@@ -32,8 +33,7 @@ def embed_chunks(
     ingesting the full book.
     """
     text_to_embed = [
-        f"This chunk is from chapter {chunk.chapter}, Section {chunk.section_title}. {chunk.text}"
-        for chunk in chunks
+        f"{chunk.context_for_embedding} | {chunk.text}" for chunk in chunks
     ]
     vectors_by_position = _call_embedding_api(texts=text_to_embed, client=client)
 

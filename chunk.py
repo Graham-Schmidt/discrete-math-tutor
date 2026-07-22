@@ -7,16 +7,21 @@
 # util: will adding next chunk break token limit?
 
 from pathlib import Path
-import tiktoken
 from dataclasses import dataclass
 from dotenv import load_dotenv
 
-from models import ReadingChapterChunk, Section
-from config import CHUNK_JSONL_DIR
-from utils import generate_chunk_id, write_jsonl, read_md_by_line
-from segment import segment_markdown_file
+from openai import OpenAI
+import tiktoken
+from tqdm import tqdm
 
-ENC = tiktoken.encoding_for_model("text-embedding-3-small")
+from models import ReadingChapterChunk, Section
+from config import CHUNK_JSONL_DIR, EMBEDDING_MODEL_SMALL, GPT_4_1_MINI
+from utils import generate_chunk_id, write_jsonl
+from segment import segment_markdown_file
+from prompts import USER_CONTEXT_CHUNKING_PROMPT
+from chat import get_completion
+
+ENC = tiktoken.encoding_for_model(EMBEDDING_MODEL_SMALL)
 CHUNK_SIZE_LIMIT = 512
 
 load_dotenv()
@@ -28,11 +33,14 @@ class NextChunkResult:
     line_count: int
 
 
-def chunk_sections(sections: list[Section]) -> list[ReadingChapterChunk]:
+def chunk_sections(
+    sections: list[Section], client: OpenAI
+) -> list[ReadingChapterChunk]:
     """intakes list of sections, transforms into chunks"""
     chunks = []
     chunk_counter = 0
-    for section in sections:
+    # TODO undo testing slice
+    for section in tqdm(sections):
         chunk = ReadingChapterChunk(
             # TODO hardcoded source type
             id=generate_chunk_id(
@@ -46,19 +54,28 @@ def chunk_sections(sections: list[Section]) -> list[ReadingChapterChunk]:
             section_title=section.section_title,
             section_number=section.section_number,
         )
+        context = _get_chunk_context(
+            chunk=chunk, client=client, file_path=section.file_path
+        )
+        chunk.context_for_embedding = context
         chunks.append(chunk)
         chunk_counter += 1
     return chunks
 
 
-def chunk_markdown_file(input_file_path: Path):
+def chunk_markdown_file(input_file_path: Path, client: OpenAI):
     """Breaks provided markdown file into chunks, writes to JSONL"""
     sections = segment_markdown_file(file_path=input_file_path)
-    chunks = chunk_sections(sections=sections)
+    chunks = chunk_sections(sections=sections, client=client)
     output_file_name = input_file_path.stem[-15:]
     _write_chunks_to_jsonl(
         chunks=chunks, path=CHUNK_JSONL_DIR, file_name=output_file_name
     )
+
+
+def get_whole_markdown_doc(file_path: Path) -> str:
+    with open(file_path) as file:
+        return file.read()
 
 
 def _write_chunks_to_jsonl(
@@ -69,6 +86,20 @@ def _write_chunks_to_jsonl(
 
 def _count_tokens(text: str) -> int:
     return len(ENC.encode(text))
+
+
+def _get_chunk_context(
+    chunk: ReadingChapterChunk, client: OpenAI, file_path: Path | None
+) -> str:
+    if file_path is None:
+        print(f"Unable to get context for file {chunk.id}, no file path found")
+        return ""
+    full_document = get_whole_markdown_doc(file_path=file_path)
+    prompt = USER_CONTEXT_CHUNKING_PROMPT.format(
+        document=full_document, chunk=chunk.text
+    )
+    response = get_completion(client=client, prompt=prompt, model=GPT_4_1_MINI)
+    return response.output_text
 
 
 # def _test_fit_next_paragraph(chunk: ReadingChapterChunk, line_token_size: int) -> bool:
