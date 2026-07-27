@@ -58,6 +58,7 @@ def fetch_answer(
         n_results=5,
         openai_client=openai_client,
     )
+    print([match.section_number for match in closest_matches])
     answer_for_user = answer_user_question(
         openai_client=openai_client,
         user_query=user_query,

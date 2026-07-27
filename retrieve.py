@@ -24,7 +24,7 @@ TEST_QUERY = "what assumptions can we make during this lecture?"
 
 def retrieve(
     user_query: str, collection: Collection, n_results: int, openai_client: OpenAI
-):
+) -> list[RetrievedChunk]:
     """Orchestator"""
     user_query_embeddings = embed_query(text=user_query, client=openai_client)
     # hit collection to get the closest results of the query
