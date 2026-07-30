@@ -44,16 +44,20 @@ def _split_into_paragraphs(lines: list[str]) -> list[str]:
     understanding of content. A header line also always starts a new
     paragraph -- verified every header in the chapter 2 sample is already
     blank-line-isolated on both sides, but that's enforced explicitly rather
-    than relied on silently for chapters not yet checked."""
+    than relied on silently for chapters not yet checked. A line starting
+    with <sup> is a real footnote body (checked against the real file: all
+    4 are single, self-contained lines, never spanning multiple lines) and
+    is likewise re-appended as its own paragraph rather than merged/dropped."""
     paragraphs: list[str] = []
     current = ""
     for line in lines:
         is_header = line.lstrip().startswith("#")
-        if line.strip() == "" or is_header:
+        is_footnote = line.lstrip().startswith("<sup>")
+        if line.strip() == "" or is_header or is_footnote:
             if current:
                 paragraphs.append(current)
                 current = ""
-            if is_header:
+            if is_header or is_footnote:
                 paragraphs.append(line)
         else:
             current += line
