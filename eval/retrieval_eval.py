@@ -7,12 +7,12 @@ no changes needed to the pipeline itself.
 
 from collections import Counter
 
-from retrieve import retrieve
+from retrieval.retrieve import retrieve
 from chromadb import Collection
 from openai import OpenAI
 
 from models import RetrievedChunk
-from test_queries import (
+from testing.test_queries import (
     TEST_QUERY_1,
     TEST_QUERY_2,
     TEST_QUERY_3,

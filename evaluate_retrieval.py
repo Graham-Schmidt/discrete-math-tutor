@@ -2,9 +2,9 @@ import chromadb
 from openai import OpenAI
 
 from eval.retrieval_eval import evaluate_retrieval
-from store import get_collection
+from ingestion.store import get_collection
 from config import TEST_COLLECTION_NAME, CHROMA_PERSIST_DIR
-from test_queries import TEST_QUERIES
+from testing.test_queries import TEST_QUERIES
 
 
 def main():

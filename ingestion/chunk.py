@@ -17,7 +17,7 @@ from tqdm import tqdm
 from models import ReadingChapterChunk, Section
 from config import CHUNK_JSONL_DIR, EMBEDDING_MODEL_SMALL, GPT_4_1_MINI
 from utils import generate_chunk_id, write_jsonl
-from segment import segment_markdown_file
+from ingestion.segment import segment_markdown_file
 from prompts import USER_CONTEXT_CHUNKING_PROMPT
 from chat import get_completion
 
