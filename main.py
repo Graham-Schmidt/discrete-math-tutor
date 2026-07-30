@@ -2,11 +2,11 @@ import chromadb
 from chromadb.api import ClientAPI
 from openai import OpenAI
 
-from chunk import chunk_markdown_file
+from ingestion.chunk import chunk_markdown_file
 from chat import answer_user_question
-from embed import embed_chapter_file, embed_query
-from store import write_to_collection, get_collection
-from retrieve import retrieve
+from ingestion.embed import embed_chapter_file, embed_query
+from ingestion.store import write_to_collection, get_collection
+from retrieval.retrieve import retrieve
 from utils import read_jsonl
 from models import EmbeddedChunk
 from config import (
@@ -19,7 +19,7 @@ from config import (
     TEST_COLLECTION_NAME,
 )
 
-from test_queries import TEST_QUERIES
+from testing.test_queries import TEST_QUERIES
 
 TEST_QUERY = "what is the axiomatic method?"
 
@@ -58,7 +58,6 @@ def fetch_answer(
         n_results=5,
         openai_client=openai_client,
     )
-    print([match.section_number for match in closest_matches])
     answer_for_user = answer_user_question(
         openai_client=openai_client,
         user_query=user_query,

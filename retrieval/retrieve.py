@@ -9,7 +9,7 @@ from openai import OpenAI
 from chromadb.api import ClientAPI
 from chromadb import Collection, QueryResult, Metadata
 
-from embed import embed_query
+from ingestion.embed import embed_query
 from models import RetrievedChunk
 
 T = TypeVar("T")
@@ -17,7 +17,7 @@ T = TypeVar("T")
 # TEMP IMPORTS FOR EASY TESTING
 import chromadb
 from config import CHROMA_PERSIST_DIR, TEST_COLLECTION_NAME
-from store import get_collection
+from ingestion.store import get_collection
 
 TEST_QUERY = "what assumptions can we make during this lecture?"
 
