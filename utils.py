@@ -10,7 +10,7 @@ def generate_chunk_id(source_type: str, chapter: str, sequence: int) -> str:
     return f"{source_type}_{chapter}_{sequence:04d}"
 
 
-def generate_segment_id(
+def generate_section_id(
     source_type: str, chapter: str, section_number: str, sequence: int
 ) -> str:
     return f"{source_type}_{chapter}_{section_number}_{sequence:04d}"

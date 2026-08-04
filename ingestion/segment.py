@@ -3,8 +3,8 @@
 import re
 from pathlib import Path
 
-from models import Section
-from utils import read_md_by_line, generate_segment_id
+from models import Section, SourceTypes
+from utils import read_md_by_line, generate_section_id
 from config import CHAPTER_2_MD_FILE_PATH
 
 # content_type patterns, first match wins; unmatched text defaults to "exposition".
@@ -126,8 +126,8 @@ def _build_sections(
         sections.append(
             Section(
                 # TODO source_type hardcoded for now
-                id=generate_segment_id(
-                    source_type="reading",
+                id=generate_section_id(
+                    source_type=SourceTypes.READING.value,
                     chapter=chapter,
                     section_number=section_number,
                     sequence=counter,

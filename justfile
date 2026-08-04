@@ -11,3 +11,6 @@ echo-vars:
 
 format:
     black .
+
+init-nltk:
+    python init-utils/nltk_download.py
