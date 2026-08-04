@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from enum import Enum
-from models import SourceTypes
+
+
+class SourceTypes(Enum):
+    READING = "reading"
 
 
 @dataclass
@@ -43,7 +46,3 @@ class Section:
     section_number: str = ""
     section_title: str = ""
     file_path: Path | None = None
-
-
-class SourceTypes(Enum):
-    READING = "reading"
