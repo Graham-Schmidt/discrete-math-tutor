@@ -74,7 +74,7 @@ def main():
     )
 
     """Chunks, embeds, and stores data | EXPENSIVE"""
-    # prepare_data(chroma_client=chroma_client, openai_client=openai_client)
+    prepare_data(chroma_client=chroma_client, openai_client=openai_client)
 
     """Test single query"""
     # answer = fetch_answer(user_query=TEST_QUERIES[0], chroma_client=chroma_client, openai_client=openai_client, collection=collection)

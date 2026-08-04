@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
+from enum import Enum
+from models import SourceTypes
 
 
 @dataclass
@@ -11,6 +13,7 @@ class Chunk:
 
 @dataclass
 class ReadingChapterChunk(Chunk):
+    source_type = SourceTypes.READING.value
     parent_id: str = ""
     content_type: str = ""
     chapter: str = ""
@@ -40,3 +43,7 @@ class Section:
     section_number: str = ""
     section_title: str = ""
     file_path: Path | None = None
+
+
+class SourceTypes(Enum):
+    READING = "reading"

@@ -1,20 +1,13 @@
-# 1. open file as I/O
-# 2. read file contents while tracking char count
-# 3a. when delimeter is found, seperate and return chunk
-# 3b. when token limit is reached, make decision about chunk and return
-# 4 attach metadata
-
-# util: will adding next chunk break token limit?
-
 from pathlib import Path
 from dataclasses import dataclass
 from dotenv import load_dotenv
+from nltk.tokenize import sent_tokenize
 
 from openai import OpenAI
 import tiktoken
 from tqdm import tqdm
 
-from models import ReadingChapterChunk, Section
+from models import ReadingChapterChunk, Section, SourceTypes
 from config import CHUNK_JSONL_DIR, EMBEDDING_MODEL_SMALL, GPT_4_1_MINI
 from utils import generate_chunk_id, write_jsonl
 from ingestion.segment import segment_markdown_file
@@ -39,26 +32,27 @@ def chunk_sections(
     """intakes list of sections, transforms into chunks"""
     chunks = []
     chunk_counter = 0
-    # TODO undo testing slice
     for section in tqdm(sections):
-        chunk = ReadingChapterChunk(
-            # TODO hardcoded source type
-            id=generate_chunk_id(
-                source_type="reading", chapter=section.chapter, sequence=chunk_counter
-            ),
-            token_size=_count_tokens(section.text),
-            text=section.text,
-            parent_id=section.id,
-            content_type=section.content_type,
-            chapter=section.chapter,
-            section_title=section.section_title,
-            section_number=section.section_number,
-        )
-        context = _get_chunk_context(
-            chunk=chunk, client=client, file_path=section.file_path
-        )
-        chunk.context_for_embedding = context
-        chunks.append(chunk)
+        if _count_tokens(section.text) > CHUNK_SIZE_LIMIT:
+            child_chunks = _create_child_chunks(
+                client=client, section=section, sequence_counter=chunk_counter
+            )
+            for c in child_chunks:
+                chunks.append(c)
+        else:
+            chunk = _create_reading_chapter_chunk(
+                client=client,
+                sequence_counter=chunk_counter,
+                token_size=_count_tokens(section.text),
+                text=section.text,
+                parent_id=section.id,
+                content_type=section.content_type,
+                chapter=section.chapter,
+                section_title=section.section_title,
+                section_number=section.section_number,
+                file_path=section.file_path,
+            )
+            chunks.append(chunk)
         chunk_counter += 1
     return chunks
 
@@ -88,6 +82,37 @@ def _count_tokens(text: str) -> int:
     return len(ENC.encode(text))
 
 
+def _create_reading_chapter_chunk(
+    client: OpenAI,
+    sequence_counter: int,
+    token_size: int,
+    text: str,
+    parent_id: str,
+    content_type: str,
+    chapter: str,
+    section_title: str,
+    section_number: str,
+    file_path: Path | None,
+):
+    chunk = ReadingChapterChunk(
+        id=generate_chunk_id(
+            source_type=ReadingChapterChunk.source_type,
+            chapter=chapter,
+            sequence=sequence_counter,
+        ),
+        token_size=token_size,
+        text=text,
+        parent_id=parent_id,
+        content_type=content_type,
+        chapter=chapter,
+        section_number=section_number,
+        section_title=section_title,
+    )
+    context = _get_chunk_context(chunk=chunk, client=client, file_path=file_path)
+    chunk.context_for_embedding = context
+    return chunk
+
+
 def _get_chunk_context(
     chunk: ReadingChapterChunk, client: OpenAI, file_path: Path | None
 ) -> str:
@@ -100,6 +125,53 @@ def _get_chunk_context(
     )
     response = get_completion(client=client, prompt=prompt, model=GPT_4_1_MINI)
     return response.output_text
+
+
+def _create_child_chunks(
+    client: OpenAI, section: Section, sequence_counter: int
+) -> list[ReadingChapterChunk]:
+    sentences = sent_tokenize(text=section.text)
+    index = 0
+    child_chunks = []
+    text = ""
+    while index < len(sentences):
+        token_size = _count_tokens(text)
+        if token_size < CHUNK_SIZE_LIMIT:
+            text += f"{sentences[index]} "
+        else:
+            child_chunks.append(
+                _create_reading_chapter_chunk(
+                    client=client,
+                    sequence_counter=sequence_counter,
+                    token_size=token_size,
+                    text=text,
+                    parent_id=section.id,
+                    content_type=section.content_type,
+                    chapter=section.chapter,
+                    section_title=section.section_title,
+                    section_number=section.section_number,
+                    file_path=section.file_path,
+                )
+            )
+            text = f"{sentences[index]} "
+            sequence_counter += 1
+        index += 1
+    if text:
+        child_chunks.append(
+            _create_reading_chapter_chunk(
+                client=client,
+                sequence_counter=sequence_counter,
+                token_size=_count_tokens(section.text),
+                text=text,
+                parent_id=section.id,
+                content_type=section.content_type,
+                chapter=section.chapter,
+                section_title=section.section_title,
+                section_number=section.section_number,
+                file_path=section.file_path,
+            )
+        )
+    return child_chunks
 
 
 # def _test_fit_next_paragraph(chunk: ReadingChapterChunk, line_token_size: int) -> bool:
