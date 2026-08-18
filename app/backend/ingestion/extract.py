@@ -23,12 +23,12 @@ def extract_pdf_file(converter: PdfConverter, file_path: Path):
     )
 
 
-def main():
+def convert_pdf_to_md():
     # TODO expand to loop over all chapters found in chapter dir
     chapter_2_path = Path(CHAPTER_2_PDF_FILE_PATH)
     converter = build_pdf_converter()
     extract_pdf_file(converter=converter, file_path=chapter_2_path)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

@@ -7,6 +7,7 @@ from chat import answer_user_question
 from ingestion.embed import embed_chapter_file, embed_query
 from ingestion.store import write_to_collection, get_collection
 from retrieval.retrieve import retrieve
+from ingestion.extract import convert_pdf_to_md
 from utils import read_jsonl
 from models import EmbeddedChunk
 from config import (
@@ -25,6 +26,7 @@ TEST_QUERY = "what is the axiomatic method?"
 
 
 def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
+    # TODO replace hardcoded destination
     chunk_markdown_file(CHAPTER_2_MD_FILE_PATH, client=openai_client)
     # get embeddings for chunks, write to disk
     embed_chapter_file(
@@ -73,25 +75,29 @@ def main():
         client=chroma_client, collection_name=TEST_COLLECTION_NAME
     )
 
+    """ !!!! EXPENSIVE FUNCTION !!!! """
+    # convert_pdf_to_md()
+    """ !!!! EXPENSIVE FUNCTION !!!! """
+
     """Chunks, embeds, and stores data | EXPENSIVE"""
     prepare_data(chroma_client=chroma_client, openai_client=openai_client)
 
     """Test single query"""
-    answer = fetch_answer(
-        user_query=TEST_QUERIES[0],
-        chroma_client=chroma_client,
-        openai_client=openai_client,
-        collection=collection,
-    )
-    print(answer)
+    # answer = fetch_answer(
+    #     user_query=TEST_QUERIES[0],
+    #     chroma_client=chroma_client,
+    #     openai_client=openai_client,
+    #     collection=collection,
+    # )
+    # print(answer)
 
     """Test all queries"""
-    # for query in TEST_QUERIES:
-    #     print(f"# Answer for query '{query}'\n")
-    #     print(
-    #         f"{fetch_answer(user_query=query, chroma_client=chroma_client, openai_client=openai_client, collection=collection)}"
-    #     )
-    #     print("END OF RESPONSE\n")
+    for query in TEST_QUERIES:
+        print(f"# Answer for query '{query}'\n")
+        print(
+            f"{fetch_answer(user_query=query, chroma_client=chroma_client, openai_client=openai_client, collection=collection)}"
+        )
+        print("END OF RESPONSE\n")
 
 
 if __name__ == "__main__":

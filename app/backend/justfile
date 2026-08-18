@@ -1,7 +1,7 @@
 set dotenv-load := true
 
 collect-course-materials:
-    python course_downloader.py
+    python -m init_utils.course_downloader
 
 delete-course-materials:
     rm -rf $COURSE_MATERIALS_PATH
@@ -14,3 +14,6 @@ format:
 
 init-nltk:
     python init-utils/nltk_download.py
+
+init-data-dirs:
+    mkdir -p data/downloads

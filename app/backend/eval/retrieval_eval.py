@@ -43,8 +43,17 @@ def evaluate_retrieval(query: str, collection: Collection, openai_client: OpenAI
 
 
 def _eval_correct_chunks_retrieved(query: str, chunks: list[RetrievedChunk]):
-    hit_rate = _hit_rate(query=query, chunks=chunks)
-    assert hit_rate == 5
+    try:
+        section_numbers = [chunk.section_number for chunk in chunks]
+        hit_rate = _hit_rate(
+            query=query, chunks=chunks, section_numbers=section_numbers
+        )
+        assert hit_rate == 5
+    except AssertionError as e:
+        print(e)
+        print(
+            f"Expected segments: {EXPECTED_SECTIONS[query]}\n Encountered segments: {section_numbers}"
+        )
 
 
 def _eval_mrr(queries: list[str], collection: Collection, client: OpenAI):
@@ -52,8 +61,10 @@ def _eval_mrr(queries: list[str], collection: Collection, client: OpenAI):
     assert mrr > 0.8
 
 
-def _hit_rate(query: str, chunks: list[RetrievedChunk]) -> int:
-    section_numbers = [chunk.section_number for chunk in chunks]
+def _hit_rate(
+    query: str, chunks: list[RetrievedChunk], section_numbers: list[str]
+) -> int:
+    # section_numbers = [chunk.section_number for chunk in chunks]
     c_1 = Counter(section_numbers)
     c_2 = Counter(EXPECTED_SECTIONS[query])
     shared_section_numbers = sum((c_1 & c_2).values())
