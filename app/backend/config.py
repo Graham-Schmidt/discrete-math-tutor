@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 # KeyError if unset
-COURSE_DATA_DIR = Path(os.environ["COURSE_MATERIALS_DIR"])
+COURSE_DATA_DIR = Path(os.environ["COURSE_DATA_DIR"])
 CHUNK_JSONL_DIR = Path(os.environ["CHUNK_JSONL_DIR"])
 EMBEDDED_CHUNK_DIR = Path(os.environ["EMBEDDED_CHUNK_DIR"])
 CHROMA_PERSIST_DIR = Path(os.environ["CHROMA_PERSIST_DIR"])

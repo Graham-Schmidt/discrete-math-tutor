@@ -231,3 +231,7 @@ marker_output/*
 
 # Claude
 CLAUDE.md
+
+# Chroma DB
+chromadb/*
+chromadb/
