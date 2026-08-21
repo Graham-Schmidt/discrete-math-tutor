@@ -1,5 +1,8 @@
 set dotenv-load := true
 
+serve:
+    uvicorn main:app --reload --port 8000
+
 collect-course-materials:
     python -m init_utils.course_downloader
 
