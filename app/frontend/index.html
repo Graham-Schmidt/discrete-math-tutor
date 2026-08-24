@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discrete Mathematics Tutor</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+    crossorigin="anonymous"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="masthead">
+    <h1>Discrete Mathematics Tutor</h1>
+    <p class="masthead__subtitle">A companion for sets, logic, proofs, graphs &amp; combinatorics</p>
+  </header>
+
+  <main class="transcript" id="transcript" aria-live="polite">
+    <p class="transcript__empty" id="emptyState">
+      Pose a question below to begin. For example: <em>&ldquo;Prove that the sum of two even integers is even.&rdquo;</em>
+    </p>
+  </main>
+
+  <form class="composer" id="composerForm">
+    <label class="composer__label" for="composerInput">Your question</label>
+    <textarea
+      id="composerInput"
+      class="composer__input"
+      rows="1"
+      placeholder="Ask a question&hellip;"
+      autocomplete="off"
+    ></textarea>
+    <button type="submit" class="composer__submit" id="composerSubmit">
+      Submit <span aria-hidden="true">&rarr;</span>
+    </button>
+  </form>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    crossorigin="anonymous"
+  ></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import chromadb
 from chromadb.api import ClientAPI
 from openai import OpenAI
+from tqdm import tqdm
 
 from ingestion.chunk import chunk_markdown_file
 from chat import answer_user_question
@@ -12,6 +13,7 @@ from utils import read_jsonl
 from models import EmbeddedChunk
 from config import (
     CHAPTER_2_MD_FILE_PATH,
+    CHAPTER_2_PDF_FILE_PATH,
     CHROMA_PERSIST_DIR,
     CHUNK_JSONL_DIR,
     RAW_CHUNKS_FILE,
@@ -19,6 +21,7 @@ from config import (
     EMBEDDED_CHUNKS_FILE,
     TEST_COLLECTION_NAME,
 )
+from init_utils.utils import get_all_chapter_pdf_file_paths
 
 from testing.test_queries import TEST_QUERIES
 
@@ -68,6 +71,12 @@ def fetch_answer(
     return answer_for_user.output_text
 
 
+def convert_all_pdfs_to_md():
+    file_paths = get_all_chapter_pdf_file_paths()
+    for path in tqdm(file_paths):
+        convert_pdf_to_md(file_path=path)
+
+
 def main():
     chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
     openai_client = OpenAI()
@@ -76,7 +85,7 @@ def main():
     )
 
     """ !!!! EXPENSIVE FUNCTION !!!! """
-    # convert_pdf_to_md()
+    # convert_all_pdfs_to_md()
     """ !!!! EXPENSIVE FUNCTION !!!! """
 
     """Chunks, embeds, and stores data | EXPENSIVE"""
