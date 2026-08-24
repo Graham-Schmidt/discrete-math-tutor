@@ -1,0 +1,226 @@
+:root {
+  --bg: #f5f1e6;
+  --bg-raised: #ede6d3;
+  --ink: #1c1b18;
+  --ink-soft: #5a554a;
+  --ink-faint: #8a8374;
+  --rule: #d9d0b8;
+  --rule-strong: #1c1b18;
+  --accent: #7a1f1f;
+
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---------- Masthead ---------- */
+
+.masthead {
+  padding: 2.5rem 1.5rem 1.25rem;
+  text-align: center;
+  border-bottom: 3px double var(--rule-strong);
+}
+
+.masthead h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.masthead__subtitle {
+  margin: 0.5rem 0 0;
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* ---------- Transcript ---------- */
+
+.transcript {
+  flex: 1;
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 1rem;
+}
+
+.transcript__empty {
+  color: var(--ink-faint);
+  font-style: italic;
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.turn {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.turn:first-child {
+  padding-top: 0;
+}
+
+.turn__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.5rem;
+}
+
+.turn--user .turn__label {
+  color: var(--ink-soft);
+}
+
+.turn--tutor .turn__label {
+  color: var(--accent);
+}
+
+.turn__content {
+  line-height: 1.65;
+  font-size: 1.05rem;
+  white-space: pre-wrap;
+}
+
+.turn--pending .turn__content {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.turn--error .turn__content {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.turn__retry {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--accent);
+  padding: 0;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.turn__retry:hover {
+  opacity: 0.7;
+}
+
+/* ---------- Composer ---------- */
+
+.composer {
+  position: sticky;
+  bottom: 0;
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 1rem 1.5rem 1.5rem;
+  background: var(--bg);
+  border-top: 1px solid var(--rule-strong);
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.composer__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.composer__input {
+  flex: 1;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--ink-faint);
+  padding: 0.4rem 0.1rem;
+  resize: none;
+  max-height: 8rem;
+  line-height: 1.5;
+}
+
+.composer__input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+.composer__input::placeholder {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.composer__submit {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: none;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.composer__submit span {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.composer__submit:hover span {
+  transform: translateX(3px);
+}
+
+.composer__submit:disabled {
+  color: var(--ink-faint);
+  cursor: default;
+}
+
+.composer__submit:disabled span {
+  transform: none;
+}
+
+/* ---------- KaTeX tuning ---------- */
+
+.katex {
+  font-size: 1.05em;
+}
+
+@media (max-width: 480px) {
+  .composer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .composer__submit {
+    align-self: flex-end;
+  }
+}
