@@ -58,16 +58,16 @@ def _check_batch_size(client: ClientAPI, n: int) -> None:
     assert n <= max_batch_size, f"{n} chunks exceeds max batch size of {max_batch_size}"
 
 
-def main():
-    client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
-    # TODO temp hardcode
-    collection = get_collection(client=client, collection_name=TEST_COLLECTION_NAME)
-    # TODO temp hardcode
-    all_chunks = read_jsonl(
-        dir=EMBEDDED_CHUNK_DIR, file_name=EMBEDDED_CHUNKS_FILE, cls=EmbeddedChunk
-    )
-    write_to_collection(collection=collection, chunks=all_chunks, client=client)
+# def main():
+#     client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
+#     # TODO temp hardcode
+#     collection = get_collection(client=client, collection_name=TEST_COLLECTION_NAME)
+#     # TODO temp hardcode
+#     all_chunks = read_jsonl(
+#         file_name=EMBEDDED_CHUNKS_FILE, cls=EmbeddedChunk
+#     )
+#     write_to_collection(collection=collection, chunks=all_chunks, client=client)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
