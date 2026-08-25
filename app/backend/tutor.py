@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import chromadb
 from chromadb.api import ClientAPI
 from openai import OpenAI
@@ -12,13 +14,10 @@ from ingestion.extract import convert_pdf_to_md
 from utils import read_jsonl
 from models import EmbeddedChunk
 from config import (
-    CHAPTER_2_MD_FILE_PATH,
-    CHAPTER_2_PDF_FILE_PATH,
+    MARKER_OUTPUT_DIR,
     CHROMA_PERSIST_DIR,
     CHUNK_JSONL_DIR,
-    RAW_CHUNKS_FILE,
     EMBEDDED_CHUNK_DIR,
-    EMBEDDED_CHUNKS_FILE,
     TEST_COLLECTION_NAME,
 )
 from init_utils.utils import get_all_chapter_pdf_file_paths
@@ -29,26 +28,27 @@ TEST_QUERY = "what is the axiomatic method?"
 
 
 def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
-    # TODO replace hardcoded destination
-    chunk_markdown_file(CHAPTER_2_MD_FILE_PATH, client=openai_client)
-    # get embeddings for chunks, write to disk
-    embed_chapter_file(
-        input_path=RAW_CHUNKS_FILE,
-        client=openai_client,
-    )
+    for subdir in Path(MARKER_OUTPUT_DIR).iterdir():
+        if subdir.is_dir():
+            for path in subdir.glob("*.md"):
+                chunk_markdown_file(path, client=openai_client)
+
+    for path in Path(CHUNK_JSONL_DIR).glob("*.jsonl"):
+        print(path.name)
+        embed_chapter_file(input_path=path, client=openai_client)
 
     # read embedded chunks
-    embedded_chunks = read_jsonl(
-        dir=EMBEDDED_CHUNK_DIR, file_name=EMBEDDED_CHUNKS_FILE, cls=EmbeddedChunk
-    )
-    # determine chroma collection to interact with
-    collection = get_collection(
-        client=chroma_client, collection_name=TEST_COLLECTION_NAME
-    )
-    # write embedded chunks to chroma DB
-    write_to_collection(
-        client=chroma_client, collection=collection, chunks=embedded_chunks
-    )
+    for path in Path(EMBEDDED_CHUNK_DIR).glob("*.jsonl"):
+
+        embedded_chunks = read_jsonl(file_path=path, cls=EmbeddedChunk)
+        # determine chroma collection to interact with
+        collection = get_collection(
+            client=chroma_client, collection_name=TEST_COLLECTION_NAME
+        )
+        # write embedded chunks to chroma DB
+        write_to_collection(
+            client=chroma_client, collection=collection, chunks=embedded_chunks
+        )
 
 
 def fetch_answer(

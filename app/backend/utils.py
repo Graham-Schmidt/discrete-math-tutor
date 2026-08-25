@@ -27,8 +27,8 @@ def write_jsonl(records: list, dir: Path, file_name: str):
             file.write(json.dumps(record) + "\n")
 
 
-def read_jsonl(dir: Path, file_name: str, cls: type[T]) -> list[T]:
-    with open(dir / file_name) as file:
+def read_jsonl(file_path: Path, cls: type[T]) -> list[T]:
+    with open(file_path) as file:
         return [cls(**json.loads(line)) for line in file]
 
 

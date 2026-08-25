@@ -66,10 +66,7 @@ def embed_chapter_file(
     client: OpenAI,
 ) -> None:
     """Read a chapter's chunk JSONL, embed it, write embedded JSONL."""
-    input_dir, input_file_name = input_path.parent, input_path.name
-    chunks = read_jsonl(
-        dir=input_dir, file_name=input_file_name, cls=ReadingChapterChunk
-    )
+    chunks = read_jsonl(file_path=input_path, cls=ReadingChapterChunk)
     embedded_chunks = embed_chunks(chunks, client)
     output_file_name = input_path.stem
     write_jsonl(
