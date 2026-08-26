@@ -1,6 +1,4 @@
-# intakes chunks
-# calls embedding API to get vector array
-# combines and writes to disk as JSONL
+"""Embeds chunks via the OpenAI embeddings API and persists them as JSONL."""
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -10,19 +8,13 @@ from openai import OpenAI
 
 from models import EmbeddedChunk, ReadingChapterChunk
 from utils import read_jsonl, write_jsonl
-from config import (
-    EMBEDDED_CHUNK_DIR,
-    CHUNK_JSONL_DIR,
-    EMBEDDED_CHUNKS_FILE,
-    RAW_CHUNKS_FILE,
-)
+from config import EMBEDDED_CHUNK_DIR
 
 load_dotenv()
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 
 
-# TODO account for new field in Chunk, context_for_embed
 def embed_chunks(
     chunks: list[ReadingChapterChunk], client: OpenAI
 ) -> list[EmbeddedChunk]:
@@ -77,20 +69,7 @@ def embed_chapter_file(
 def _call_embedding_api(
     texts: list[str], client: OpenAI, model: str = EMBEDDING_MODEL
 ) -> dict:
+    """Embed `texts` in one API call, returning embeddings keyed by their input index."""
     response = client.embeddings.create(input=texts, model=model)
     vectors_by_position = {item.index: item.embedding for item in response.data}
     return vectors_by_position
-
-
-# if __name__ == "__main__":
-#     client = OpenAI()
-#     embed_chapter_file(
-#         # This is a bad pattern, expects complete path + filename
-#         input_dir=CHUNK_JSONL_DIR,
-#         # TODO temp hardcode
-#         input_file_name=RAW_CHUNKS_FILE,
-#         output_dir=EMBEDDED_CHUNK_DIR,
-#         # TODO temp hardcode
-#         output_file_name=EMBEDDED_CHUNKS_FILE,
-#         client=client,
-#     )

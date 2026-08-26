@@ -1,9 +1,4 @@
-"""
-retrieval_eval.py's core loop is small — call your existing retrieve() per query,
-compare RetrievedChunk.section_number against expected_sections,
-aggregate. This slots in as a pure consumer of retrieve.py,
-no changes needed to the pipeline itself.
-"""
+"""Evaluates retrieval quality against a hand-labeled set of expected sections."""
 
 from collections import Counter
 
@@ -31,6 +26,7 @@ EXPECTED_SECTIONS = {
 
 
 def evaluate_retrieval(query: str, collection: Collection, openai_client: OpenAI):
+    """Retrieve `query`'s top chunks and check both its hit rate and the full test set's MRR."""
     chunks = retrieve(
         user_query=query,
         collection=collection,
@@ -43,6 +39,7 @@ def evaluate_retrieval(query: str, collection: Collection, openai_client: OpenAI
 
 
 def _eval_correct_chunks_retrieved(query: str, chunks: list[RetrievedChunk]):
+    """Assert all 5 retrieved chunks' sections match EXPECTED_SECTIONS[query]; print a diff on failure."""
     try:
         section_numbers = [chunk.section_number for chunk in chunks]
         hit_rate = _hit_rate(
@@ -57,6 +54,7 @@ def _eval_correct_chunks_retrieved(query: str, chunks: list[RetrievedChunk]):
 
 
 def _eval_mrr(queries: list[str], collection: Collection, client: OpenAI):
+    """Assert the mean reciprocal rank across `queries` exceeds 0.8."""
     mrr = _check_mrr(queries=TEST_QUERIES, collection=collection, client=client)
     assert mrr > 0.8
 
@@ -64,6 +62,8 @@ def _eval_mrr(queries: list[str], collection: Collection, client: OpenAI):
 def _hit_rate(
     query: str, chunks: list[RetrievedChunk], section_numbers: list[str]
 ) -> int:
+    """Count how many retrieved section numbers appear in the expected set for `query`
+    (multiset overlap, so a repeated expected section can count more than once)."""
     # section_numbers = [chunk.section_number for chunk in chunks]
     c_1 = Counter(section_numbers)
     c_2 = Counter(EXPECTED_SECTIONS[query])
@@ -72,6 +72,7 @@ def _hit_rate(
 
 
 def _check_mrr(queries: list[str], collection: Collection, client: OpenAI):
+    """Compute the mean reciprocal rank of the first correct chunk across `queries`."""
     ranks = [
         _reciprocal_rank(
             query,
@@ -88,6 +89,7 @@ def _check_mrr(queries: list[str], collection: Collection, client: OpenAI):
 
 
 def _reciprocal_rank(query: str, chunks: list[RetrievedChunk]):
+    """Return 1/rank of the first chunk whose section is expected for `query`, or 0 if none match."""
     correct_section = set(EXPECTED_SECTIONS[query])
     for rank, chunk in enumerate(chunks, start=1):
         if chunk.section_number in correct_section:

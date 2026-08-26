@@ -1,3 +1,5 @@
+"""CLI orchestration for the ingestion pipeline and end-to-end tutor Q&A."""
+
 from pathlib import Path
 
 import chromadb
@@ -28,6 +30,9 @@ TEST_QUERY = "what is the axiomatic method?"
 
 
 def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
+    """Chunk every extracted chapter markdown file, embed the chunks, and
+    upsert them into the Chroma collection. Expensive: calls the OpenAI API
+    once per chunk (chunking context) plus once per chapter (embedding)."""
     for subdir in Path(MARKER_OUTPUT_DIR).iterdir():
         if subdir.is_dir():
             for path in subdir.glob("*.md"):
@@ -54,6 +59,7 @@ def prepare_data(chroma_client: ClientAPI, openai_client: OpenAI):
 def fetch_answer(
     user_query: str, chroma_client: ClientAPI, openai_client: OpenAI, collection
 ):
+    """Retrieve the chunks most relevant to `user_query` and answer it from them."""
     # user_query = TEST_QUERY
 
     # lookup k nearest neighbors from collection
@@ -72,12 +78,14 @@ def fetch_answer(
 
 
 def convert_all_pdfs_to_md():
+    """Convert every chapter PDF in COURSE_DATA_DIR to markdown via Marker. Expensive."""
     file_paths = get_all_chapter_pdf_file_paths()
     for path in tqdm(file_paths):
         convert_pdf_to_md(file_path=path)
 
 
 def main():
+    """CLI entry point: (re)build the ingestion pipeline, then run the test queries end-to-end."""
     chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
     openai_client = OpenAI()
     collection = get_collection(

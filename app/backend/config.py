@@ -1,3 +1,6 @@
+"""Env-backed paths and model names shared across the backend. Raises if required
+environment variables are unset or if COURSE_DATA_DIR doesn't exist on disk."""
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
