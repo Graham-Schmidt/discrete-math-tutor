@@ -1,3 +1,5 @@
+"""CLI entry point to run retrieval evaluation over the fixed test query set."""
+
 import chromadb
 from openai import OpenAI
 
@@ -8,6 +10,7 @@ from testing.test_queries import TEST_QUERIES
 
 
 def main():
+    """Run `evaluate_retrieval` for every query in TEST_QUERIES against the test collection."""
     chroma_client = chromadb.PersistentClient(CHROMA_PERSIST_DIR)
     openai_client = OpenAI()
     collection = get_collection(

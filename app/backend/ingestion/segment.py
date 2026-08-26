@@ -25,6 +25,7 @@ _CHAPTER_ID_RE = re.compile(r"chap\d+")
 
 
 def segment_markdown_file(file_path: Path) -> list[Section]:
+    """Read a chapter markdown file and split it into classified `Section`s."""
     chapter = _extract_chapter_id(file_path)
     lines = read_md_by_line(file_path)
     paragraphs = _split_into_paragraphs(lines)
@@ -32,6 +33,7 @@ def segment_markdown_file(file_path: Path) -> list[Section]:
 
 
 def _extract_chapter_id(file_path: Path) -> str:
+    """Pull the 'chapNN' id out of the file's stem, e.g. 'chap02'."""
     match = _CHAPTER_ID_RE.search(file_path.stem)
     assert match is not None, f"no chapter id (e.g. 'chap02') found in {file_path.name}"
     return match.group()
@@ -65,6 +67,7 @@ def _split_into_paragraphs(lines: list[str]) -> list[str]:
 
 
 def _classify_content_type(text: str) -> str:
+    """Classify a paragraph by its leading pattern (theorem, proof, etc.), or 'exposition' if none match."""
     for content_type, pattern in _CONTENT_TYPE_PATTERNS:
         if pattern.match(text):
             return content_type
@@ -141,14 +144,3 @@ def _build_sections(
         counter += 1
 
     return sections
-
-
-def main():
-    sections = segment_markdown_file(CHAPTER_2_MD_FILE_PATH)
-    for section in sections[:15]:
-        print("=" * 40)
-        print(section)
-
-
-if __name__ == "__main__":
-    main()

@@ -1,3 +1,6 @@
+"""Splits segmented sections into token-bounded chunks and enriches each with
+situating context (via an LLM call) for embedding."""
+
 from pathlib import Path
 from dataclasses import dataclass
 from dotenv import load_dotenv
@@ -7,7 +10,7 @@ from openai import OpenAI
 import tiktoken
 from tqdm import tqdm
 
-from models import ReadingChapterChunk, Section, SourceTypes
+from models import ReadingChapterChunk, Section
 from config import CHUNK_JSONL_DIR, EMBEDDING_MODEL_SMALL, GPT_4_1_MINI
 from utils import generate_chunk_id, write_jsonl
 from ingestion.segment import segment_markdown_file
@@ -22,6 +25,8 @@ load_dotenv()
 
 @dataclass
 class NextChunkResult:
+    """A chunk paired with the number of source lines it consumed."""
+
     chunk: ReadingChapterChunk
     line_count: int
 
@@ -68,6 +73,7 @@ def chunk_markdown_file(input_file_path: Path, client: OpenAI):
 
 
 def get_whole_markdown_doc(file_path: Path) -> str:
+    """Read a markdown file's full contents as a single string."""
     with open(file_path) as file:
         return file.read()
 
@@ -75,10 +81,12 @@ def get_whole_markdown_doc(file_path: Path) -> str:
 def _write_chunks_to_jsonl(
     chunks: list[ReadingChapterChunk], path: Path, file_name: str
 ):
+    """Serialize chunks to `path/file_name.jsonl`."""
     write_jsonl(chunks, path, file_name)
 
 
 def _count_tokens(text: str) -> int:
+    """Count tokens in `text` using the embedding model's tokenizer."""
     return len(ENC.encode(text))
 
 
@@ -94,6 +102,7 @@ def _create_reading_chapter_chunk(
     section_number: str,
     file_path: Path | None,
 ):
+    """Build a `ReadingChapterChunk` and populate its embedding context via an LLM call."""
     chunk = ReadingChapterChunk(
         id=generate_chunk_id(
             source_type=ReadingChapterChunk.source_type,
@@ -116,6 +125,7 @@ def _create_reading_chapter_chunk(
 def _get_chunk_context(
     chunk: ReadingChapterChunk, client: OpenAI, file_path: Path | None
 ) -> str:
+    """Ask the LLM to situate `chunk` within its full source document, for retrieval context."""
     if file_path is None:
         print(f"Unable to get context for file {chunk.id}, no file path found")
         return ""
@@ -130,6 +140,7 @@ def _get_chunk_context(
 def _create_child_chunks(
     client: OpenAI, section: Section, sequence_counter: int
 ) -> list[ReadingChapterChunk]:
+    """Split an over-limit section into sentence-aligned chunks, each under CHUNK_SIZE_LIMIT tokens."""
     sentences = sent_tokenize(text=section.text)
     index = 0
     child_chunks = []
@@ -172,56 +183,3 @@ def _create_child_chunks(
             )
         )
     return child_chunks
-
-
-# def _test_fit_next_paragraph(chunk: ReadingChapterChunk, line_token_size: int) -> bool:
-#     potential_size = chunk.token_size + line_token_size
-#     if potential_size <= CHUNK_SIZE_LIMIT:
-#         return True
-#     return False
-
-
-# def _get_next_chunk(
-#     lines: list[str], curr_index: int, sequence: int
-# ) -> NextChunkResult:
-#     # TODO parse file name to properly extract chapter data
-#     line_count = 0
-#     chunk_id = generate_chunk_id("reading", "chap02", sequence)
-#     curr_chunk = ReadingChapterChunk(id=chunk_id, chapter="chap02")
-#     i = curr_index
-
-#     while i < len(lines):
-#         line = lines[i]
-#         line_token_size = _count_tokens(line)
-#         # Choose to always append first line, even if oversized
-#         if line_count == 0 or _test_fit_next_paragraph(
-#             chunk=curr_chunk, line_token_size=line_token_size
-#         ):
-#             curr_chunk.text += line
-#             curr_chunk.token_size += line_token_size
-#             line_count += 1
-#             i += 1
-#         else:
-#             break
-
-#     return NextChunkResult(chunk=curr_chunk, line_count=line_count)
-
-
-# def _get_chunks(lines: list[str]) -> list[ReadingChapterChunk]:
-#     sequence = 0
-#     curr_index = 0
-#     # call _get_next_chunk
-#     all_chunks = []
-#     while curr_index < len(lines):
-#         res = _get_next_chunk(lines, curr_index, sequence)
-#         all_chunks.append(res.chunk)
-#         curr_index += res.line_count
-#         sequence += 1
-
-#     return all_chunks
-
-
-# def _read_file(file_name: Path) -> list[str]:
-#     with open(file_name) as file:
-#         res = file.readlines()
-#     return res

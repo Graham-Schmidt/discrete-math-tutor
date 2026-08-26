@@ -1,3 +1,5 @@
+"""FastAPI app: serves the frontend static files and the tutor query endpoint."""
+
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -15,6 +17,8 @@ FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 
 class Query(BaseModel):
+    """Request body for POST /query-tutor/."""
+
     text: str
 
 
@@ -30,11 +34,13 @@ app.add_middleware(
 
 @app.get("/health")
 async def health():
+    """Liveness check."""
     return {"message": "Hello Graham"}
 
 
 @app.post("/query-tutor/")
 async def query_tutor(query: Query):
+    """Answer a student's question using the persisted Chroma collection."""
     chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
     collection = get_collection(
         client=chroma_client, collection_name=TEST_COLLECTION_NAME

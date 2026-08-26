@@ -1,3 +1,5 @@
+"""One-off script to download and unpack the MIT OCW 6.042J course materials."""
+
 import requests
 import zipfile
 from pathlib import Path
@@ -6,11 +8,13 @@ from config import COURSE_DATA_DIR
 
 
 def delete_archive(filename: str):
+    """Delete the downloaded zip archive, if present."""
     file = Path(filename)
     file.unlink(missing_ok=True)
 
 
 def unzip_files(zip_filename: str):
+    """Extract the course materials zip into COURSE_DATA_DIR."""
     with zipfile.ZipFile(zip_filename, "r") as zip_ref:
         zip_ref.extractall(COURSE_DATA_DIR)
 
@@ -29,6 +33,7 @@ def download_course_materials() -> str:
 
 
 def main():
+    """Download, unpack, and clean up the course materials archive."""
     try:
         zip_filename = download_course_materials()
         unzip_files(zip_filename)

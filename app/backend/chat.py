@@ -8,6 +8,7 @@ from prompts import SYSTEM_ANSWER_STUDENT_QUESTION
 
 
 def get_completion(client: OpenAI, prompt: str, model: str, system_prompt: str = ""):
+    """Call the OpenAI Responses API with `prompt` as input and `system_prompt` as instructions."""
     response = client.responses.create(
         model=model, input=prompt, instructions=system_prompt
     )
@@ -18,6 +19,7 @@ def get_completion(client: OpenAI, prompt: str, model: str, system_prompt: str =
 def answer_user_question(
     openai_client: OpenAI, user_query: str, retrieved_chunks: list[RetrievedChunk]
 ):
+    """Answer a student's question by grounding a chat completion in the retrieved chunks."""
     formatted_chunks = _format_context(chunks=retrieved_chunks)
     full_input = _build_user_input(query=user_query, context=formatted_chunks)
     result = get_completion(
@@ -30,6 +32,7 @@ def answer_user_question(
 
 
 def _format_context(chunks: list[RetrievedChunk]) -> str:
+    """Render retrieved chunks as chapter-labeled text blocks for the prompt."""
     return "\n\n".join(f"[Source: Chapter {c.chapter}]\n{c.text}" for c in chunks)
 
 
