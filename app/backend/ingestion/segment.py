@@ -5,7 +5,6 @@ from pathlib import Path
 
 from models import Section, SourceTypes
 from utils import read_md_by_line, generate_section_id
-from config import CHAPTER_2_MD_FILE_PATH
 
 _CONTENT_TYPE_PATTERNS = [
     ("formula", re.compile(r"^\$\$")),

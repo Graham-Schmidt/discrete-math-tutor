@@ -7,19 +7,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 # KeyError if unset
-COURSE_DATA_DIR = Path(os.environ["COURSE_DATA_DIR"])
-CHUNK_JSONL_DIR = Path(os.environ["CHUNK_JSONL_DIR"])
-EMBEDDED_CHUNK_DIR = Path(os.environ["EMBEDDED_CHUNK_DIR"])
-CHROMA_PERSIST_DIR = Path(os.environ["CHROMA_PERSIST_DIR"])
-MARKER_OUTPUT_DIR = Path(os.environ["MARKER_OUTPUT_DIR"])
-
-EMBEDDED_CHUNKS_FILE = os.environ["EMBEDDED_CHUNKS_FILE"]
-RAW_CHUNKS_FILE = Path(os.environ["RAW_CHUNKS_FILE"])
+COURSE_DATA_DIR = Path("data/downloads")
+CHUNK_JSONL_DIR = Path("data/chunks/raw-chunks")
+EMBEDDED_CHUNK_DIR = Path("data/chunks/embedded-chunks")
+CHROMA_PERSIST_DIR = Path("chromadb/")
+MARKER_OUTPUT_DIR = Path("data/marker-output")
 
 TEST_COLLECTION_NAME = os.environ["TEST_COLLECTION_NAME"]
-CHAPTER_2_PDF_FILE_PATH = Path(os.environ["CHAPTER_2_PDF_FILE_PATH"])
-CHAPTER_2_MD_FILE_PATH = Path(os.environ["CHAPTER_2_MD_FILE_PATH"])
-OUTPUT_PATH = Path(os.environ["OUTPUT_PATH"])
 
 GPT_4_1_MINI = os.environ["GPT_4_1_MINI"]
 EMBEDDING_MODEL_SMALL = os.environ["EMBEDDING_MODEL_SMALL"]
