@@ -1,0 +1,8 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./app/backend/data:/usr/local/app/backend/data
+      - ./app/backend/chromadb:/usr/local/app/backend/chromadb
