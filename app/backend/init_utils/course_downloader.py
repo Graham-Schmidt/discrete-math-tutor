@@ -7,19 +7,19 @@ from pathlib import Path
 from config import COURSE_DATA_DIR
 
 
-def delete_archive(filename: str):
+def _delete_archive(filename: str):
     """Delete the downloaded zip archive, if present."""
     file = Path(filename)
     file.unlink(missing_ok=True)
 
 
-def unzip_files(zip_filename: str):
+def _unzip_files(zip_filename: str):
     """Extract the course materials zip into COURSE_DATA_DIR."""
     with zipfile.ZipFile(zip_filename, "r") as zip_ref:
         zip_ref.extractall(COURSE_DATA_DIR)
 
 
-def download_course_materials() -> str:
+def _download_course_materials() -> str:
     """writes zip archive to disk, returns zip filename"""
     url = "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/6.042j-fall-2010.zip"
     output_filename = "temp.zip"
@@ -32,19 +32,15 @@ def download_course_materials() -> str:
     return output_filename
 
 
-def main():
+def download_course():
     """Download, unpack, and clean up the course materials archive."""
     try:
-        zip_filename = download_course_materials()
-        unzip_files(zip_filename)
-        delete_archive(zip_filename)
+        zip_filename = _download_course_materials()
+        _unzip_files(zip_filename)
+        _delete_archive(zip_filename)
     except requests.RequestException as e:
         print(f"Download failed: {e}")
         raise SystemExit(1)
     except zipfile.BadZipFile as e:
         print(f"Downlaoded file wasn't a valid zip file: {e}")
         raise SystemExit(1)
-
-
-if __name__ == "__main__":
-    main()
