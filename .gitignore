@@ -235,3 +235,6 @@ CLAUDE.md
 # Chroma DB
 chromadb/*
 chromadb/
+
+# SQLite DB
+*tutor.db

@@ -7,9 +7,11 @@ build:
 serve:
     uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
+[working-directory('app/backend')]
 build-backend-data:
-    python app/backend/init_utils/nltk_download.py
-    python app/backend/pipeline_builder.py
+    python sqlite_utils.py
+    python init_utils/nltk_download.py
+    python pipeline_builder.py
     
 format:
     black .
