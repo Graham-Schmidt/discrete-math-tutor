@@ -89,11 +89,17 @@ function resolveTutorTurn(pending, text) {
   scrollToBottom();
 }
 
-function failTutorTurn(pending, onRetry) {
+function failTutorTurn(pending, detailText, onRetry) {
   pending.stop();
   pending.turn.classList.remove("turn--pending");
   pending.turn.classList.add("turn--error");
-  pending.content.textContent = "The tutor could not be reached. ";
+  let errorMessage = "The tutor could not be reached. " 
+  let errorDetails = ""
+  if (detailText) {
+    errorDetails = detailText + " ";
+  }
+  errorMessage += errorDetails;
+  pending.content.textContent = errorMessage;
 
   const retryButton = document.createElement("button");
   retryButton.type = "button";
@@ -119,13 +125,15 @@ async function askTutor(questionText) {
     });
 
     if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
+      const responseDetail = await response.text()
+      const detailText = JSON.parse(responseDetail).detail
+      throw new Error(`Request failed with status ${response.status}`, {cause: detailText});
     }
 
     const data = await response.json();
     resolveTutorTurn(pending, data.message);
   } catch (err) {
-    failTutorTurn(pending, () => askTutor(questionText));
+    failTutorTurn(pending, err.cause, () => askTutor(questionText));
   }
 }
 
