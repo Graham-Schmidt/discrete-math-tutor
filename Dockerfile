@@ -13,6 +13,4 @@ EXPOSE 8000
 RUN useradd app
 USER app
 
-WORKDIR /usr/local/app/backend
-
 CMD ["just", "serve"]
