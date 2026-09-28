@@ -3,6 +3,9 @@ set dotenv-load := true
 build:
     docker compose build
 
+build-hosted:
+    docker build -f Dockerfile.hosted -t discrete-math-tutor:hosted .
+
 [working-directory('app/backend')]
 serve:
     uvicorn main:app --reload --host 0.0.0.0 --port 8000

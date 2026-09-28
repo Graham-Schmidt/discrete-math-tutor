@@ -1,0 +1,10 @@
+.git
+**/.DS_Store
+**/__pycache__
+
+# Local macOS venv (~1.4GB, useless in a Linux image)
+app/backend/venv
+
+# Build-pipeline data and vector store: mounted as volumes / uploaded via SFTP
+app/backend/data
+app/backend/chromadb
