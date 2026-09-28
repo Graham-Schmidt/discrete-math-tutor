@@ -1,0 +1,19 @@
+# Serve-only image: expects prebuilt chromadb/ (and data/) to be uploaded
+# and mounted rather than built inside the container.
+FROM python:3.13-slim
+WORKDIR /usr/local/app
+
+COPY requirements-serve.txt ./
+RUN pip install --no-cache-dir -r requirements-serve.txt
+
+COPY app .
+
+RUN useradd app \
+    && mkdir -p backend/data/downloads backend/chromadb \
+    && chown -R app:app backend
+USER app
+
+WORKDIR /usr/local/app/backend
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
